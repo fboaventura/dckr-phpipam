@@ -12,7 +12,7 @@ LABEL org.label-schema.build-date="2017-09-12T07:30:15Z" \
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
                                 && apt-get -y install apache2 libapache2-mod-php php-mysql vim curl fping php-gmp php-ldap php-pear \
                                 && apt-get clean \
-                                && mkdir /var/www/html/
+                                && mkdir -p /var/www/html/
 
 RUN a2enmod rewrite
 
@@ -34,8 +34,8 @@ ENV PROXY_ENABLED false
 ENV VERSION 1.3
 
 ADD https://github.com/phpipam/phpipam/archive/${VERSION}.tar.gz /tmp
-RUN tar -xzf /tmp/1.2.tar.gz -C /var/www/html --strip-components=1
+RUN tar -xzf /tmp/${VERSION}.tar.gz -C /var/www/html --strip-components=1
 
-COPY default-vhost.conf /etc/apache2/sites-available/000-default.conf
-COPY config.php /var/www/html
+COPY files/default-vhost.conf /etc/apache2/sites-available/000-default.conf
+COPY files/config.php /var/www/html
 
