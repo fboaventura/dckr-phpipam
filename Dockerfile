@@ -12,7 +12,7 @@ LABEL org.label-schema.build-date="2017-09-12T07:30:15Z" \
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
                                 && apt-get -y install apache2 libapache2-mod-php php-mysql vim curl fping php-gmp php-ldap php-pear \
                                 && apt-get clean \
-                                && mkdir -p /var/www/html/
+                                && mkdir -p /var/www/html/ /var/lock /var/run
 
 RUN a2enmod rewrite
 
@@ -23,6 +23,7 @@ EXPOSE 80 443
 CMD ["/usr/sbin/apache2", "-D", "FOREGROUND"]
 
 ENV APACHE_LOCK_DIR /var/lock
+ENV APACHE_RUN_DIR /var/run
 ENV APACHE_RUN_USER www-data
 ENV APACHE_RUN_GROUP www-data
 ENV APACHE_LOG_DIR /var/log/apache2/
