@@ -29,7 +29,7 @@ ENV APACHE_LOCK_DIR="/var/lock" \
 ENV SSL_ENABLED false
 ENV PROXY_ENABLED false
 
-ENV VERSION 1.3
+ARG VERSION
 
 ADD https://github.com/phpipam/phpipam/archive/${VERSION}.tar.gz /tmp
 RUN tar -xzf /tmp/${VERSION}.tar.gz -C /var/www/html --strip-components=1
@@ -39,7 +39,6 @@ COPY files/config.php /var/www/html
 
 # Metadata params
 ARG BUILD_DATE
-ARG VERSION
 ARG VCS_URL
 ARG VCS_REF
 ARG AUTHOR
