@@ -1,18 +1,16 @@
-FROM ubuntu:17.04
+FROM ubuntu:17.10
 
-LABEL org.label-schema.build-date="2017-09-12T07:30:15Z" \
-            org.label-schema.docker.dockerfile="/Dockerfile" \
-            org.label-schema.license="MIT" \
-            org.label-schema.name="PHPIpam" \
-            org.label-schema.url="https://frederico.cf" \
-            org.label-schema.vcs-ref="d7ef28d" \
-            org.label-schema.vcs-type="Git" \
-            org.label-schema.vcs-url="https://github.com/fboaventura/dckr-phpipam.git"
+# To use apt-cacher-ng while building locally
+# ADD files/deb-proxy.conf /etc/apt/apt.conf.d/10-proxy
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
-                                && apt-get -y install apache2 libapache2-mod-php php-mysql vim curl fping php-gmp php-ldap php-pear \
+                                && apt-get -y upgrade \
+                                && apt-get -y install cron apache2 libapache2-mod-php php-mysql vim curl fping php-gmp php-ldap \
+                                    php-pear php-mbstring php-gd php-mcrypt php-curl php-cli php-snmp \
                                 && apt-get clean \
-                                && mkdir -p /var/www/html/ /var/lock /var/run
+                                && mkdir -p /var/www/html/ /var/lock /var/run \
+                                && phpenmod snmp \
+                                && rm /var/www/html/index.html
 
 RUN a2enmod rewrite
 
@@ -20,23 +18,52 @@ VOLUME ["/ssl"]
 
 EXPOSE 80 443
 
-CMD ["/usr/sbin/apache2", "-D", "FOREGROUND"]
+#CMD ["/usr/sbin/apache2", "-D", "FOREGROUND"]
+CMD ["/start.sh"]
 
-ENV APACHE_LOCK_DIR /var/lock
-ENV APACHE_RUN_DIR /var/run
-ENV APACHE_RUN_USER www-data
-ENV APACHE_RUN_GROUP www-data
-ENV APACHE_LOG_DIR /var/log/apache2/
-ENV APACHE_PID_FILE /var/apache.pid
+ADD files/crontab /etc/cron.d/phpipam
+ADD files/start.sh /start.sh
+
+RUN chmod 0644 /etc/cron.d/phpipam \
+    && chmod 0755 /start.sh
+
+
+ENV APACHE_LOCK_DIR="/var/lock" \
+        APACHE_RUN_DIR="/var/run" \
+        APACHE_RUN_USER="www-data" \
+        APACHE_RUN_GROUP="www-data" \
+        APACHE_LOG_DIR="/var/log/apache2/" \
+        APACHE_PID_FILE="/var/apache.pid"
 
 ENV SSL_ENABLED false
 ENV PROXY_ENABLED false
 
-ENV VERSION 1.3
+ENV VERSION 1.3.1
 
 ADD https://github.com/phpipam/phpipam/archive/${VERSION}.tar.gz /tmp
 RUN tar -xzf /tmp/${VERSION}.tar.gz -C /var/www/html --strip-components=1
 
 COPY files/default-vhost.conf /etc/apache2/sites-available/000-default.conf
 COPY files/config.php /var/www/html
+
+# Metadata params
+ARG BUILD_DATE
+ARG VCS_URL
+ARG VCS_REF
+ARG AUTHOR
+ARG VENDOR
+
+# Metadata
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.name="PHP-IPAM" \
+      org.label-schema.description="IP Address Management." \
+      org.label-schema.url="https://frederico.boaventura.net" \
+      org.label-schema.vcs-url=$VCS_URL \
+      org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.vendor="$VENDOR" \
+      org.label-schema.version="$VERSION" \
+      org.label-schema.schema-version="1.0" \
+      org.label-schema.author="$AUTHOR" \
+      org.label-schema.docker.dockerfile="/Dockerfile" \
+      org.label-schema.license="MIT"
 
