@@ -5,8 +5,8 @@ FROM ubuntu:17.10
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
                                 && apt-get -y upgrade \
-                                && apt-get -y install apache2 libapache2-mod-php php-mysql vim curl fping php-gmp php-ldap php-pear \
-                                    php-mbstring php-gd php-mcrypt php-curl php-cli php-snmp \
+                                && apt-get -y install cron apache2 libapache2-mod-php php-mysql vim curl fping php-gmp php-ldap \
+                                    php-pear php-mbstring php-gd php-mcrypt php-curl php-cli php-snmp \
                                 && apt-get clean \
                                 && mkdir -p /var/www/html/ /var/lock /var/run \
                                 && phpenmod snmp \
