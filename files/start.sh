@@ -1,6 +1,7 @@
 #!/bin/bash
 
-echo -en "* Starting crond..."
+env | grep ^MYSQL > /.mydata
+echo "* Starting crond..."
 cron
-echo -en "* Starting apache..."
+echo "* Starting apache..."
 /usr/sbin/apache2 -D FOREGROUND

@@ -22,10 +22,10 @@ EXPOSE 80 443
 CMD ["/start.sh"]
 
 ADD files/crontab /etc/cron.d/phpipam
-ADD files/start.sh /start.sh
+ADD files/start.sh files/cron.sh /
 
 RUN chmod 0644 /etc/cron.d/phpipam \
-    && chmod 0755 /start.sh
+    && chmod 0755 /start.sh /cron.sh
 
 
 ENV APACHE_LOCK_DIR="/var/lock" \
