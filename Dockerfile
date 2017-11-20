@@ -1,7 +1,7 @@
 FROM ubuntu:17.10
 
 # To use apt-cacher-ng while building locally
-ADD files/deb-proxy.conf /etc/apt/apt.conf.d/10-proxy
+# ADD files/deb-proxy.conf /etc/apt/apt.conf.d/10-proxy
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
                                 && apt-get -y upgrade \
