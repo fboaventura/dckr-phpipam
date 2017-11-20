@@ -1,7 +1,7 @@
 FROM ubuntu:17.10
 
 # To use apt-cacher-ng while building locally
-#ADD files/deb-proxy.conf /etc/apt/apt.conf.d/10-proxy
+ADD files/deb-proxy.conf /etc/apt/apt.conf.d/10-proxy
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
                                 && apt-get -y upgrade \
@@ -9,6 +9,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
                                     php-mbstring php-gd php-mcrypt php-curl php-cli php-snmp \
                                 && apt-get clean \
                                 && mkdir -p /var/www/html/ /var/lock /var/run \
+                                && phpenmod snmp \
                                 && rm /var/www/html/index.html
 
 RUN a2enmod rewrite
@@ -17,7 +18,15 @@ VOLUME ["/ssl"]
 
 EXPOSE 80 443
 
-CMD ["/usr/sbin/apache2", "-D", "FOREGROUND"]
+#CMD ["/usr/sbin/apache2", "-D", "FOREGROUND"]
+CMD ["/start.sh"]
+
+ADD files/crontab /etc/cron.d/phpipam
+ADD files/start.sh /start.sh
+
+RUN chmod 0644 /etc/cron.d/phpipam \
+    && chmod 0755 /start.sh
+
 
 ENV APACHE_LOCK_DIR="/var/lock" \
         APACHE_RUN_DIR="/var/run" \
