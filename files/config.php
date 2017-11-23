@@ -51,6 +51,15 @@ $phpsessname = "phpipam";
 if(!defined('BASE'))
 define('BASE', "/");
 
+/**
+  * Google MAPs API key for locations to display map
+  *
+  *  Obtain key: Go to your Google Console (https://console.developers.google.com) and enable "Google Maps JavaScript API"
+  *  from overview tab, so go to Credentials tab and make an API key for your project.
+  ******************************/
+$gmaps_api_key         = getenv('GMAPS_API_KEY');
+$gmaps_api_geocode_key = getenv('GMAPS_API_GEOCODE_KEY');
+
 /*  proxy connection details
  ******************************/
 $proxy_enabled  = getenv('PROXY_ENABLED');                 # Enable/Disable usage of the Proxy server
