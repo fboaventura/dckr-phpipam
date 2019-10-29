@@ -1,16 +1,17 @@
-FROM ubuntu:17.10
+FROM ubuntu:19.10
 
 # To use apt-cacher-ng while building locally
-# ADD files/deb-proxy.conf /etc/apt/apt.conf.d/10-proxy
+#ADD files/deb-proxy.conf /etc/apt/apt.conf.d/10-proxy
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update \
-                                && apt-get -y upgrade \
-                                && apt-get -y install cron apache2 libapache2-mod-php php-mysql vim curl fping php-gmp php-ldap \
-                                    php-pear php-mbstring php-gd php-mcrypt php-curl php-cli php-snmp \
-                                && apt-get clean \
-                                && mkdir -p /var/www/html/ /var/lock /var/run \
-                                && phpenmod snmp \
-                                && rm /var/www/html/index.html
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update \
+    && apt-get -y upgrade \
+    && apt-get -y install cron apache2 libapache2-mod-php php-mysql vim curl fping php-gmp php-ldap \
+       php-pear php-mbstring php-gd php-curl php-cli php-snmp \
+    && apt-get clean \
+    && mkdir -p /var/www/html/ /var/lock /var/run \
+    && phpenmod snmp \
+    && rm /var/www/html/index.html
 
 RUN a2enmod rewrite
 
@@ -38,7 +39,7 @@ ENV APACHE_LOCK_DIR="/var/lock" \
 ENV SSL_ENABLED false
 ENV PROXY_ENABLED false
 
-ENV VERSION 1.3.1
+ENV VERSION 1.4
 
 ADD https://github.com/phpipam/phpipam/archive/${VERSION}.tar.gz /tmp
 RUN tar -xzf /tmp/${VERSION}.tar.gz -C /var/www/html --strip-components=1
@@ -57,7 +58,7 @@ ARG VENDOR
 LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.name="PHP-IPAM" \
       org.label-schema.description="IP Address Management." \
-      org.label-schema.url="https://frederico.boaventura.net" \
+      org.label-schema.url="https://frederico.cf" \
       org.label-schema.vcs-url=$VCS_URL \
       org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.vendor="$VENDOR" \
